@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Dərs Dəftəri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EAEFF1;
+    --paper-line:#D3DCE0;
+    --ink:#1F2C3D;
+    --ink-soft:#5B6B7C;
+    --red:#BD4438;
+    --gold:#C79433;
+    --sage:#5F8567;
+    --card:#FFFFFF;
+    --shadow: 0 1px 2px rgba(31,44,61,0.06), 0 4px 12px rgba(31,44,61,0.06);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'IBM Plex Sans', sans-serif;
+    background:
+      linear-gradient(var(--paper-line) 1px, transparent 1px) 0 0/100% 28px,
+      var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    padding-bottom:88px;
+  }
+  .hairline-margin{
+    position:fixed; top:0; bottom:0; left:34px; width:1px; background:rgba(189,68,56,0.18); z-index:0;
+  }
+  header{
+    position:relative; z-index:1;
+    padding:22px 20px 14px 44px;
+  }
+  header .eyebrow{
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); font-weight:600;
+  }
+  header h1{
+    font-family:'Caveat', cursive;
+    font-size:40px; font-weight:700; margin:2px 0 0; color:var(--ink); line-height:1;
+  }
+  main{
+    position:relative; z-index:1;
+    padding:6px 18px 18px 44px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:18px;
+    margin-bottom:16px;
+  }
+  .card h2{
+    font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);
+    margin:0 0 14px; font-weight:600;
+  }
+  label{display:block; font-size:13px; color:var(--ink-soft); margin:12px 0 6px; font-weight:500;}
+  label:first-child{margin-top:0;}
+  select, input[type=date], input[type=time], input[type=number], input[type=text]{
+    width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--paper-line);
+    font-size:16px; font-family:inherit; background:#FBFCFD; color:var(--ink);
+  }
+  select:focus, input:focus{outline:none; border-color:var(--ink);}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; padding:13px 16px; border-radius:10px; border:none;
+    font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; margin-top:16px;
+    background:var(--ink); color:#fff; transition:transform .08s ease, opacity .15s ease;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn.secondary{background:transparent; color:var(--ink); border:1.5px solid var(--paper-line); margin-top:8px;}
+  .btn.danger{background:transparent; color:var(--red); border:1.5px solid rgba(189,68,56,0.35);}
+  .btn.gold{background:var(--gold);}
+  .btn.small{width:auto; padding:9px 16px; font-size:13px; margin-top:0;}
+
+  /* Stamp */
+  .stamp{
+    width:52px; height:52px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    border:2px solid currentColor; color:var(--ink);
+    transform:rotate(-6deg);
+    font-family:'Caveat', cursive;
+  }
+  .stamp .d{font-size:19px; font-weight:700; line-height:1;}
+  .stamp .m{font-size:10px; text-transform:uppercase; letter-spacing:.05em; font-family:'IBM Plex Sans'; font-weight:600; margin-top:1px;}
+
+  .subject-row{
+    display:flex; align-items:center; gap:12px; padding:14px 4px;
+    border-bottom:1px solid var(--paper-line);
+    cursor:pointer;
+  }
+  .subject-row:last-child{border-bottom:none;}
+  .subject-row:active{background:#F7F9FA;}
+  .dot{width:11px; height:11px; border-radius:50%; flex:none;}
+  .subject-name{font-weight:600; font-size:15.5px; flex:1;}
+  .subject-count{font-size:13px; color:var(--ink-soft); text-align:right;}
+  .subject-count b{color:var(--ink); font-size:16px;}
+  .chevron{color:var(--paper-line); font-size:20px;}
+
+  .entry{
+    display:flex; align-items:center; gap:14px; padding:12px 0;
+    border-bottom:1px solid var(--paper-line);
+  }
+  .entry:last-child{border-bottom:none;}
+  .entry-info{flex:1;}
+  .entry-subject{font-weight:600; font-size:15px;}
+  .entry-note{font-size:13px; color:var(--ink-soft); margin-top:2px;}
+  .entry-del{background:none;border:none;color:var(--ink-soft);font-size:20px;cursor:pointer;padding:6px;}
+
+  .empty{
+    text-align:center; padding:30px 10px; color:var(--ink-soft); font-size:14px;
+  }
+  .empty .big{font-family:'Caveat', cursive; font-size:26px; color:var(--ink); display:block; margin-bottom:4px;}
+
+  nav{
+    position:fixed; bottom:0; left:0; right:0; z-index:5;
+    background:var(--card); border-top:1px solid var(--paper-line);
+    display:flex; padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+    box-shadow:0 -2px 10px rgba(31,44,61,0.06);
+  }
+  nav button{
+    flex:1; background:none; border:none; font-family:inherit; cursor:pointer;
+    padding:8px 4px 6px; display:flex; flex-direction:column; align-items:center; gap:4px;
+    color:var(--ink-soft); font-size:11px; font-weight:600; border-radius:10px;
+  }
+  nav button svg{width:21px; height:21px;}
+  nav button.active{color:var(--red);}
+
+  .tab{display:none;}
+  .tab.active{display:block;}
+  .subview{display:none;}
+  .subview.active{display:block;}
+
+  .subj-select-grid{display:flex; flex-wrap:wrap; gap:8px;}
+  .subj-chip{
+    padding:9px 14px; border-radius:20px; border:1.5px solid var(--paper-line);
+    font-size:14px; font-weight:600; cursor:pointer; background:#FBFCFD; color:var(--ink);
+  }
+  .subj-chip.selected{border-color:currentColor; color:#fff;}
+
+  .month-total{
+    display:flex; align-items:baseline; justify-content:space-between;
+    background:linear-gradient(135deg, rgba(199,148,51,0.12), rgba(199,148,51,0.03));
+    border:1.5px dashed var(--gold); border-radius:12px; padding:14px 16px; margin-bottom:14px;
+  }
+  .month-total .label{font-size:13px; color:var(--ink-soft); font-weight:600;}
+  .month-total .val{font-family:'Caveat', cursive; font-size:34px; color:var(--gold); font-weight:700;}
+
+  .toast{
+    position:fixed; left:50%; bottom:100px; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:10px 18px; border-radius:30px; font-size:14px;
+    opacity:0; transition:all .25s ease; z-index:20; pointer-events:none; white-space:nowrap;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .row-between{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .icon-btn{background:none; border:none; color:var(--ink-soft); font-size:18px; cursor:pointer; padding:4px;}
+
+  /* subject detail */
+  .detail-head{display:flex; align-items:center; gap:12px; margin-bottom:4px;}
+  .back-btn{background:none; border:none; font-size:22px; color:var(--ink); cursor:pointer; padding:4px 6px 4px 0;}
+  .detail-title{font-family:'Caveat', cursive; font-size:30px; font-weight:700; flex:1;}
+  .subject-badge{width:14px; height:14px; border-radius:50%; flex:none;}
+
+  .cycle-box{
+    border-radius:12px; padding:16px; margin:14px 0;
+    border:1.5px solid var(--paper-line);
+  }
+  .cycle-box.ready{border-color:var(--gold); background:linear-gradient(135deg, rgba(199,148,51,0.10), rgba(199,148,51,0.02));}
+  .cycle-progress-bar{
+    height:8px; border-radius:5px; background:var(--paper-line); overflow:hidden; margin:10px 0 8px;
+  }
+  .cycle-progress-fill{height:100%; border-radius:5px; transition:width .3s ease;}
+  .cycle-text{font-size:13.5px; color:var(--ink-soft);}
+  .cycle-text b{color:var(--ink);}
+  .cycle-settings{display:flex; gap:10px; margin-top:12px;}
+  .cycle-settings > div{flex:1;}
+  .cycle-settings label{margin-top:0; font-size:12px;}
+
+  /* weekly schedule */
+  .day-chip-grid{display:flex; flex-wrap:wrap; gap:8px;}
+  .day-chip{
+    width:42px; height:42px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    border:1.5px solid var(--paper-line); background:#FBFCFD; color:var(--ink-soft);
+    font-size:13px; font-weight:700; cursor:pointer;
+  }
+  .day-chip.selected{color:#fff;}
+  .schedule-rows{margin-top:14px;}
+  .schedule-row{
+    display:flex; align-items:center; gap:12px; padding:10px 0;
+    border-bottom:1px solid var(--paper-line);
+  }
+  .schedule-row:last-child{border-bottom:none;}
+  .schedule-row .sday{font-weight:600; font-size:14.5px; flex:1;}
+  .schedule-row input[type=time]{width:120px;}
+  .schedule-empty{font-size:13.5px; color:var(--ink-soft); padding:6px 0 2px;}
+
+  /* color picker */
+  .swatch-grid{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;}
+  .swatch{
+    width:34px; height:34px; border-radius:50%; cursor:pointer; border:2px solid transparent;
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px;
+  }
+  .swatch.selected{border-color:var(--ink); box-shadow:0 0 0 2px #fff inset;}
+  .custom-swatch{
+    width:34px; height:34px; border-radius:50%; padding:0; border:1.5px solid var(--paper-line);
+    background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red); cursor:pointer; overflow:hidden;
+  }
+  .custom-swatch::-webkit-color-swatch-wrapper{padding:0;}
+  .custom-swatch::-webkit-color-swatch{border:none; border-radius:50%;}
+
+  .confirm-text{font-size:14px; color:var(--ink); margin-bottom:12px; text-align:center;}
+  .confirm-row{display:flex; gap:10px;}
+  .confirm-row .btn{margin-top:0;}
+</style>
+</head>
+<body>
+<div class="hairline-margin"></div>
+
+<header>
+  <div class="eyebrow" id="dateNow">—</div>
+  <h1 id="pageTitle">Dərs Dəftəri</h1>
+</header>
+
+<main>
+
+  <!-- TAB: ADD -->
+  <div class="tab active" id="tab-add">
+    <div class="card">
+      <h2>Bugün hansı müəllimə getdin?</h2>
+      <label>Fənn</label>
+      <div class="subj-select-grid" id="addSubjectChips"></div>
+
+      <div class="two-col">
+        <div>
+          <label>Tarix</label>
+          <input type="date" id="addDate">
+        </div>
+        <div>
+          <label>Saat</label>
+          <input type="time" id="addTime">
+        </div>
+      </div>
+
+      <label>Qeyd (istəyə bağlı)</label>
+      <input type="text" id="addNote" placeholder="məs: mövzu, ödəniş və s.">
+
+      <button class="btn" id="saveVisitBtn">Qeyd et</button>
+    </div>
+
+    <div class="card">
+      <div class="row-between">
+        <h2 style="margin-bottom:0;">Son qeydlər</h2>
+      </div>
+      <div id="recentList"></div>
+    </div>
+  </div>
+
+  <!-- TAB: SUBJECTS -->
+  <div class="tab" id="tab-subjects">
+
+    <div class="subview active" id="subjectsListView">
+      <div class="card">
+        <h2>Fənlər (bir fənnə bas ki, ətraflı görəsən)</h2>
+        <div id="subjectList"></div>
+      </div>
+      <div class="card">
+        <h2>Yeni fənn / müəllim əlavə et</h2>
+        <label>Ad</label>
+        <input type="text" id="newSubjectName" placeholder="məs: Coğrafiya, Ramil müəllim...">
+        <button class="btn secondary" id="addSubjectBtn">+ Əlavə et</button>
+      </div>
+    </div>
+
+    <div class="subview" id="subjectDetailView">
+      <div class="card">
+        <div class="detail-head">
+          <button class="back-btn" id="backToSubjects">←</button>
+          <div class="subject-badge" id="detailBadge"></div>
+          <div class="detail-title" id="detailName">—</div>
+        </div>
+
+        <label>Rəng</label>
+        <div class="swatch-grid" id="colorSwatches"></div>
+
+        <div class="cycle-box" id="cycleBox">
+          <div class="cycle-text" id="cycleStatusText">—</div>
+          <div class="cycle-progress-bar"><div class="cycle-progress-fill" id="cycleFill"></div></div>
+          <div class="cycle-text" id="cycleSubText">—</div>
+          <button class="btn gold" id="payCycleBtn" style="display:none;">Bu dövrü ödə</button>
+
+          <div class="cycle-settings">
+            <div>
+              <label>Neçə dərsdən sonra ödəniş</label>
+              <input type="number" id="cycleLessonsInput" min="1">
+            </div>
+            <div>
+              <label>Məbləğ (₼)</label>
+              <input type="number" id="cyclePriceInput" min="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Həftəlik cədvəl</h2>
+        <div class="day-chip-grid" id="scheduleDayChips"></div>
+        <div class="schedule-rows" id="scheduleRows"></div>
+      </div>
+
+      <div class="card">
+        <h2>Bu fənnə yeni qeyd əlavə et</h2>
+        <div class="two-col">
+          <div>
+            <label>Tarix</label>
+            <input type="date" id="detailAddDate">
+          </div>
+          <div>
+            <label>Saat</label>
+            <input type="time" id="detailAddTime">
+          </div>
+        </div>
+        <label>Qeyd (istəyə bağlı)</label>
+        <input type="text" id="detailAddNote" placeholder="məs: mövzu">
+        <button class="btn" id="detailSaveBtn">Qeyd et</button>
+      </div>
+
+      <div class="card">
+        <h2>Bu fənnə aid bütün günlər</h2>
+        <div id="detailVisitList"></div>
+      </div>
+
+      <div class="card">
+        <div id="deleteSubjectSection">
+          <button class="btn danger" id="deleteSubjectBtn">Fənni sil</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAB: HISTORY -->
+  <div class="tab" id="tab-history">
+    <div class="card">
+      <div class="row-between">
+        <h2 style="margin-bottom:0;">Bütün tarixçə</h2>
+      </div>
+      <label style="margin-top:14px;">Fənnə görə filtrlə</label>
+      <select id="historyFilter"></select>
+    </div>
+    <div class="card">
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- TAB: PAYMENTS -->
+  <div class="tab" id="tab-payments">
+    <div class="card">
+      <h2>Bu ayın ödənişi</h2>
+      <div class="month-total">
+        <div>
+          <div class="label" id="currentMonthLabel">Ay</div>
+        </div>
+        <div class="val"><span id="currentMonthTotal">0</span> ₼</div>
+      </div>
+      <label>Fənn (istəyə bağlı)</label>
+      <select id="paymentSubject"><option value="">Ümumi / bir neçə fənn</option></select>
+      <label>Məbləğ (₼)</label>
+      <input type="number" id="paymentAmount" placeholder="40" inputmode="decimal">
+      <label>Tarix</label>
+      <input type="date" id="paymentDate">
+      <label>Qeyd (istəyə bağlı)</label>
+      <input type="text" id="paymentNote" placeholder="məs: bütün fənlər üçün ümumi">
+      <button class="btn gold" id="savePaymentBtn">Ödənişi qeyd et</button>
+    </div>
+    <div class="card">
+      <h2>Ödəniş tarixçəsi</h2>
+      <div id="paymentList"></div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<nav>
+  <button class="active" data-tab="add">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    Qeyd et
+  </button>
+  <button data-tab="subjects">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    Fənlər
+  </button>
+  <button data-tab="history">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+    Tarixçə
+  </button>
+  <button data-tab="payments">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+    Ödəniş
+  </button>
+</nav>
+
+<script>
+const STORAGE_KEY = 'ders-defteri-data-v2';
+const DEFAULT_SUBJECTS = [
+  {id:'s1', name:'Riyaziyyat', color:'#BD4438', cycleLessons:8, cyclePrice:40, schedule:{}},
+  {id:'s2', name:'İngilis dili', color:'#5F8567', cycleLessons:8, cyclePrice:40, schedule:{}},
+  {id:'s3', name:'Fizika', color:'#3C6E9E', cycleLessons:8, cyclePrice:40, schedule:{}},
+  {id:'s4', name:'Rus dili', color:'#8A5DA8', cycleLessons:8, cyclePrice:40, schedule:{}},
+  {id:'s5', name:'Azərbaycan dili', color:'#C79433', cycleLessons:8, cyclePrice:40, schedule:{}},
+  {id:'s6', name:'Kimya', color:'#3E8E82', cycleLessons:8, cyclePrice:40, schedule:{}},
+];
+const DAY_NAMES_SHORT = ['B','B.e','Ç.a','Ç','C.a','C','Ş'];
+const DAY_NAMES_FULL = ['Bazar','Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə'];
+const PALETTE = ['#BD4438','#5F8567','#3C6E9E','#8A5DA8','#C79433','#3E8E82','#B0507A','#6B7A3E'];
+
+let data = { subjects: [...DEFAULT_SUBJECTS], visits: [], payments: [] };
+let selectedAddSubject = null;
+let currentDetailSubjectId = null;
+
+const AZ_MONTHS = ['Yanvar','Fevral','Mart','Aprel','May','İyun','İyul','Avqust','Sentyabr','Oktyabr','Noyabr','Dekabr'];
+const AZ_MONTHS_SHORT = ['Yan','Fev','Mar','Apr','May','İyn','İyl','Avq','Sen','Okt','Noy','Dek'];
+const AZ_DAYS = ['Bazar','Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə'];
+
+function todayStr(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+function fmtDateLong(iso){
+  const d = new Date(iso+'T00:00:00');
+  return `${AZ_DAYS[d.getDay()]}, ${d.getDate()} ${AZ_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+function monthKey(iso){ return iso.slice(0,7); }
+
+function migrateSubjects(){
+  data.subjects.forEach(s=>{
+    if(typeof s.cycleLessons !== 'number') s.cycleLessons = 8;
+    if(typeof s.cyclePrice !== 'number') s.cyclePrice = 40;
+    if(!s.schedule || typeof s.schedule !== 'object') s.schedule = {};
+  });
+  data.payments.forEach(p=>{
+    if(typeof p.subjectId === 'undefined') p.subjectId = '';
+  });
+}
+
+async function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed.subjects && parsed.subjects.length) data.subjects = parsed.subjects;
+      else data.subjects = [...DEFAULT_SUBJECTS];
+      data.visits = parsed.visits || [];
+      data.payments = parsed.payments || [];
+    }
+  }catch(e){
+    // ilk dəfə açılır, standart fənnlərlə başlanır
+  }
+  migrateSubjects();
+}
+
+async function persist(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }catch(e){
+    showToast('Yadda saxlanmadı, yenidən cəhd et');
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 1800);
+}
+
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function subjectById(id){ return data.subjects.find(s=>s.id===id); }
+
+/* ---------- RENDER: ADD TAB ---------- */
+function renderAddChips(){
+  const wrap = document.getElementById('addSubjectChips');
+  wrap.innerHTML = '';
+  if((!selectedAddSubject || !subjectById(selectedAddSubject)) && data.subjects[0]) selectedAddSubject = data.subjects[0].id;
+  data.subjects.forEach(s=>{
+    const chip = document.createElement('div');
+    chip.className = 'subj-chip' + (selectedAddSubject===s.id ? ' selected' : '');
+    chip.style.background = selectedAddSubject===s.id ? s.color : '#FBFCFD';
+    chip.style.borderColor = s.color;
+    chip.style.color = selectedAddSubject===s.id ? '#fff' : s.color;
+    chip.textContent = s.name;
+    chip.onclick = ()=>{ selectedAddSubject = s.id; renderAddChips(); };
+    wrap.appendChild(chip);
+  });
+}
+
+function renderRecent(){
+  const list = document.getElementById('recentList');
+  const sorted = [...data.visits].sort((a,b)=> (b.date+(b.time||'')).localeCompare(a.date+(a.time||'')) || b.id.localeCompare(a.id));
+  const recent = sorted.slice(0,5);
+  if(recent.length===0){
+    list.innerHTML = `<div class="empty"><span class="big">Hələ boşdur</span>Bugünkü dərsini yuxarıdan qeyd et</div>`;
+    return;
+  }
+  list.innerHTML = recent.map(v=> entryHTML(v)).join('');
+  attachDeleteHandlers(list);
+}
+
+function entryHTML(v){
+  const s = subjectById(v.subjectId);
+  const name = s ? s.name : 'Silinmiş fənn';
+  const color = s ? s.color : '#999';
+  const d = new Date(v.date+'T00:00:00');
+  const timePart = v.time ? ` · saat ${v.time}` : '';
+  return `<div class="entry" data-id="${v.id}">
+    <div class="stamp" style="color:${color}">
+      <div class="d">${d.getDate()}</div>
+      <div class="m">${AZ_MONTHS_SHORT[d.getMonth()]}</div>
+    </div>
+    <div class="entry-info">
+      <div class="entry-subject" style="color:${color}">${escapeHtml(name)}</div>
+      <div class="entry-note">${fmtDateLong(v.date)}${timePart}${v.note ? ' · '+escapeHtml(v.note) : ''}</div>
+    </div>
+    <button class="entry-del" data-del-visit="${v.id}">✕</button>
+  </div>`;
+}
+
+function attachDeleteHandlers(container){
+  container.querySelectorAll('[data-del-visit]').forEach(btn=>{
+    btn.onclick = async ()=>{
+      const id = btn.getAttribute('data-del-visit');
+      data.visits = data.visits.filter(v=>v.id!==id);
+      await persist();
+      renderAll();
+      if(currentDetailSubjectId) renderSubjectDetail();
+      showToast('Qeyd silindi');
+    };
+  });
+}
+
+/* ---------- RENDER: SUBJECTS LIST ---------- */
+function renderSubjectList(){
+  const wrap = document.getElementById('subjectList');
+  if(data.subjects.length===0){
+    wrap.innerHTML = `<div class="empty"><span class="big">Fənn yoxdur</span>Aşağıdan əlavə et</div>`;
+    return;
+  }
+  wrap.innerHTML = data.subjects.map(s=>{
+    const count = data.visits.filter(v=>v.subjectId===s.id).length;
+    return `<div class="subject-row" data-open-subject="${s.id}">
+      <div class="dot" style="background:${s.color}"></div>
+      <div class="subject-name">${escapeHtml(s.name)}</div>
+      <div class="subject-count"><b>${count}</b> dəfə</div>
+      <div class="chevron">›</div>
+    </div>`;
+  }).join('');
+  wrap.querySelectorAll('[data-open-subject]').forEach(row=>{
+    row.onclick = ()=> openSubjectDetail(row.getAttribute('data-open-subject'));
+  });
+}
+
+/* ---------- SUBJECT DETAIL VIEW ---------- */
+function openSubjectDetail(id){
+  currentDetailSubjectId = id;
+  document.getElementById('subjectsListView').classList.remove('active');
+  document.getElementById('subjectDetailView').classList.add('active');
+  document.getElementById('detailAddDate').value = todayStr();
+  document.getElementById('detailAddTime').value = '';
+  document.getElementById('detailAddNote').value = '';
+  renderSubjectDetail();
+}
+
+function closeSubjectDetail(){
+  currentDetailSubjectId = null;
+  document.getElementById('subjectDetailView').classList.remove('active');
+  document.getElementById('subjectsListView').classList.add('active');
+  renderSubjectList();
+}
+
+function renderSubjectDetail(){
+  const s = subjectById(currentDetailSubjectId);
+  if(!s){ closeSubjectDetail(); return; }
+
+  document.getElementById('detailBadge').style.background = s.color;
+  document.getElementById('detailName').textContent = s.name;
+  document.getElementById('cycleLessonsInput').value = s.cycleLessons;
+  document.getElementById('cyclePriceInput').value = s.cyclePrice;
+
+  const visits = data.visits.filter(v=>v.subjectId===s.id).sort((a,b)=> (b.date+(b.time||'')).localeCompare(a.date+(a.time||'')));
+  const totalVisits = visits.length;
+  const subjectPaymentsCount = data.payments.filter(p=>p.subjectId===s.id).length;
+  const lessonsAccounted = subjectPaymentsCount * s.cycleLessons;
+  let progress = totalVisits - lessonsAccounted;
+  if(progress < 0) progress = 0;
+  const cycleLessons = Math.max(1, s.cycleLessons || 8);
+  const ready = progress >= cycleLessons;
+  const displayProgress = ready ? cycleLessons : progress;
+
+  document.getElementById('cycleBox').classList.toggle('ready', ready);
+  document.getElementById('cycleFill').style.width = Math.min(100, (displayProgress/cycleLessons)*100) + '%';
+  document.getElementById('cycleFill').style.background = ready ? 'var(--gold)' : s.color;
+  document.getElementById('cycleStatusText').innerHTML = `Cəmi getmə: <b>${totalVisits}</b> dəfə · Ödənilmiş dövr: <b>${subjectPaymentsCount}</b>`;
+  document.getElementById('cycleSubText').innerHTML = ready
+    ? `<b>${cycleLessons}/${cycleLessons} dərs tamamlandı</b> — ${s.cyclePrice} ₼ ödəniş vaxtıdır`
+    : `<b>${displayProgress}/${cycleLessons}</b> dərs tamamlanıb, ${cycleLessons-displayProgress} dərs qalıb (${s.cyclePrice} ₼ üçün)`;
+  document.getElementById('payCycleBtn').style.display = ready ? 'flex' : 'none';
+
+  const listWrap = document.getElementById('detailVisitList');
+  if(visits.length===0){
+    listWrap.innerHTML = `<div class="empty"><span class="big">Hələ qeyd yoxdur</span>Yuxarıdan bu fənnə ilk qeydini əlavə et</div>`;
+  }else{
+    listWrap.innerHTML = visits.map(v=>{
+      const d = new Date(v.date+'T00:00:00');
+      return `<div class="entry" data-id="${v.id}">
+        <div class="stamp" style="color:${s.color}">
+          <div class="d">${d.getDate()}</div>
+          <div class="m">${AZ_MONTHS_SHORT[d.getMonth()]}</div>
+        </div>
+        <div class="entry-info">
+          <div class="entry-subject" style="color:${s.color}">${fmtDateLong(v.date)}</div>
+          <div class="entry-note">${v.time ? 'Saat '+v.time : 'Saat qeyd edilməyib'}${v.note ? ' · '+escapeHtml(v.note) : ''}</div>
+        </div>
+        <button class="entry-del" data-del-visit="${v.id}">✕</button>
+      </div>`;
+    }).join('');
+    attachDeleteHandlers(listWrap);
+  }
+
+  renderSchedule(s);
+  renderColorSwatches(s);
+  renderDeleteSection();
+}
+
+function renderColorSwatches(s){
+  const wrap = document.getElementById('colorSwatches');
+  wrap.innerHTML = '';
+  PALETTE.forEach(color=>{
+    const sw = document.createElement('div');
+    sw.className = 'swatch' + (s.color.toLowerCase()===color.toLowerCase() ? ' selected' : '');
+    sw.style.background = color;
+    if(s.color.toLowerCase()===color.toLowerCase()) sw.textContent = '✓';
+    sw.onclick = async ()=>{
+      s.color = color;
+      await persist();
+      renderAll();
+      renderSubjectDetail();
+    };
+    wrap.appendChild(sw);
+  });
+  const custom = document.createElement('input');
+  custom.type = 'color';
+  custom.className = 'custom-swatch';
+  custom.value = s.color;
+  custom.title = 'Öz rəngini seç';
+  custom.addEventListener('input', async (e)=>{
+    s.color = e.target.value;
+    await persist();
+    renderAll();
+    renderSubjectDetail();
+  });
+  wrap.appendChild(custom);
+}
+
+function renderDeleteSection(){
+  const wrap = document.getElementById('deleteSubjectSection');
+  wrap.innerHTML = `<button class="btn danger" id="deleteSubjectBtn">Fənni sil</button>`;
+  document.getElementById('deleteSubjectBtn').onclick = ()=>{
+    const s = subjectById(currentDetailSubjectId);
+    if(!s) return;
+    wrap.innerHTML = `
+      <div class="confirm-text">"${escapeHtml(s.name)}" fənnini silmək istədiyinə əminsən?<br>Ona aid qeydlər tarixçədə qalacaq.</div>
+      <div class="confirm-row">
+        <button class="btn secondary" id="cancelDeleteBtn" style="margin-top:0;">İmtina et</button>
+        <button class="btn danger" id="confirmDeleteBtn" style="margin-top:0;">Bəli, sil</button>
+      </div>`;
+    document.getElementById('cancelDeleteBtn').onclick = renderDeleteSection;
+    document.getElementById('confirmDeleteBtn').onclick = async ()=>{
+      data.subjects = data.subjects.filter(x=>x.id!==s.id);
+      await persist();
+      closeSubjectDetail();
+      renderAll();
+      showToast('Fənn silindi');
+    };
+  };
+}
+
+function renderSchedule(s){
+  const chipsWrap = document.getElementById('scheduleDayChips');
+  chipsWrap.innerHTML = '';
+  DAY_NAMES_SHORT.forEach((label, idx)=>{
+    const selected = Object.prototype.hasOwnProperty.call(s.schedule, idx);
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (selected ? ' selected' : '');
+    chip.style.background = selected ? s.color : '#FBFCFD';
+    chip.style.borderColor = s.color;
+    chip.textContent = label;
+    chip.onclick = async ()=>{
+      if(Object.prototype.hasOwnProperty.call(s.schedule, idx)){
+        delete s.schedule[idx];
+      }else{
+        s.schedule[idx] = '16:00';
+      }
+      await persist();
+      renderSchedule(s);
+    };
+    chipsWrap.appendChild(chip);
+  });
+
+  const rowsWrap = document.getElementById('scheduleRows');
+  const activeDays = Object.keys(s.schedule).map(Number).sort((a,b)=>a-b);
+  if(activeDays.length===0){
+    rowsWrap.innerHTML = `<div class="schedule-empty">Hələ gün seçilməyib. Yuxarıdan həftənin günlərini seç.</div>`;
+    return;
+  }
+  rowsWrap.innerHTML = activeDays.map(idx=>{
+    return `<div class="schedule-row">
+      <div class="sday">${DAY_NAMES_FULL[idx]}</div>
+      <input type="time" data-schedule-day="${idx}" value="${s.schedule[idx]}">
+    </div>`;
+  }).join('');
+  rowsWrap.querySelectorAll('[data-schedule-day]').forEach(inp=>{
+    inp.addEventListener('change', async (e)=>{
+      const idx = e.target.getAttribute('data-schedule-day');
+      s.schedule[idx] = e.target.value || '16:00';
+      await persist();
+    });
+  });
+}
+
+document.getElementById('backToSubjects').onclick = closeSubjectDetail;
+
+document.getElementById('cycleLessonsInput').addEventListener('change', async (e)=>{
+  const s = subjectById(currentDetailSubjectId);
+  if(!s) return;
+  const val = Math.max(1, parseInt(e.target.value) || 8);
+  s.cycleLessons = val;
+  await persist();
+  renderSubjectDetail();
+});
+document.getElementById('cyclePriceInput').addEventListener('change', async (e)=>{
+  const s = subjectById(currentDetailSubjectId);
+  if(!s) return;
+  s.cyclePrice = Math.max(0, Number(e.target.value) || 0);
+  await persist();
+  renderSubjectDetail();
+});
+
+document.getElementById('payCycleBtn').onclick = async ()=>{
+  const s = subjectById(currentDetailSubjectId);
+  if(!s) return;
+  data.payments.push({
+    id: uid(),
+    amount: s.cyclePrice,
+    date: todayStr(),
+    note: `${s.name} — ${s.cycleLessons} dərsdən sonra`,
+    subjectId: s.id
+  });
+  await persist();
+  renderAll();
+  renderSubjectDetail();
+  showToast('Dövr ödənişi qeyd edildi ✓');
+};
+
+document.getElementById('detailSaveBtn').onclick = async ()=>{
+  const s = subjectById(currentDetailSubjectId);
+  if(!s) return;
+  const date = document.getElementById('detailAddDate').value || todayStr();
+  const time = document.getElementById('detailAddTime').value;
+  const note = document.getElementById('detailAddNote').value.trim();
+  data.visits.push({ id: uid(), subjectId: s.id, date, time, note });
+  await persist();
+  document.getElementById('detailAddNote').value = '';
+  renderAll();
+  renderSubjectDetail();
+  showToast('Qeyd edildi ✓');
+};
+
+/* ---------- RENDER: HISTORY TAB ---------- */
+function renderHistoryFilter(){
+  const sel = document.getElementById('historyFilter');
+  const current = sel.value;
+  sel.innerHTML = `<option value="all">Bütün fənlər</option>` + data.subjects.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+  if(current) sel.value = current;
+}
+
+function renderHistoryList(){
+  const filter = document.getElementById('historyFilter').value || 'all';
+  const list = document.getElementById('historyList');
+  let visits = [...data.visits].sort((a,b)=> (b.date+(b.time||'')).localeCompare(a.date+(a.time||'')) || b.id.localeCompare(a.id));
+  if(filter !== 'all') visits = visits.filter(v=>v.subjectId===filter);
+  if(visits.length===0){
+    list.innerHTML = `<div class="empty"><span class="big">Qeyd tapılmadı</span>Bu fənnə aid hələ getmə qeydin yoxdur</div>`;
+    return;
+  }
+  list.innerHTML = visits.map(v=>entryHTML(v)).join('');
+  attachDeleteHandlers(list);
+}
+
+/* ---------- RENDER: PAYMENTS TAB ---------- */
+function renderPaymentSubjectSelect(){
+  const sel = document.getElementById('paymentSubject');
+  const current = sel.value;
+  sel.innerHTML = `<option value="">Ümumi / bir neçə fənn</option>` + data.subjects.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+  if(current) sel.value = current;
+}
+
+function renderPayments(){
+  const now = new Date();
+  const mk = now.toISOString().slice(0,7);
+  document.getElementById('currentMonthLabel').textContent = `${AZ_MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+  const total = data.payments.filter(p=>monthKey(p.date)===mk).reduce((sum,p)=>sum+Number(p.amount||0),0);
+  document.getElementById('currentMonthTotal').textContent = total;
+
+  const list = document.getElementById('paymentList');
+  const sorted = [...data.payments].sort((a,b)=> b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  if(sorted.length===0){
+    list.innerHTML = `<div class="empty"><span class="big">Hələ ödəniş yoxdur</span>Yuxarıdan ilk ödənişini qeyd et</div>`;
+    return;
+  }
+  const groups = {};
+  sorted.forEach(p=>{
+    const mk2 = monthKey(p.date);
+    if(!groups[mk2]) groups[mk2] = [];
+    groups[mk2].push(p);
+  });
+  let html = '';
+  Object.keys(groups).sort().reverse().forEach(mk2=>{
+    const [y,m] = mk2.split('-');
+    const monthTotal = groups[mk2].reduce((s,p)=>s+Number(p.amount||0),0);
+    html += `<div style="margin-bottom:8px;">
+      <div class="row-between" style="padding:8px 0 2px;">
+        <div style="font-weight:700; font-size:14px;">${AZ_MONTHS[Number(m)-1]} ${y}</div>
+        <div style="font-weight:700; color:var(--gold); font-size:14px;">${monthTotal} ₼</div>
+      </div>`;
+    groups[mk2].forEach(p=>{
+      const d = new Date(p.date+'T00:00:00');
+      const s = p.subjectId ? subjectById(p.subjectId) : null;
+      html += `<div class="entry" data-id="${p.id}">
+        <div class="stamp" style="color:${s ? s.color : 'var(--gold)'}">
+          <div class="d">${d.getDate()}</div>
+          <div class="m">${AZ_MONTHS_SHORT[d.getMonth()]}</div>
+        </div>
+        <div class="entry-info">
+          <div class="entry-subject" style="color:var(--ink)">${p.amount} ₼${s ? ' · '+escapeHtml(s.name) : ''}</div>
+          <div class="entry-note">${p.note ? escapeHtml(p.note) : 'Ödəniş'}</div>
+        </div>
+        <button class="entry-del" data-del-payment="${p.id}">✕</button>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  list.innerHTML = html;
+  list.querySelectorAll('[data-del-payment]').forEach(btn=>{
+    btn.onclick = async ()=>{
+      const id = btn.getAttribute('data-del-payment');
+      data.payments = data.payments.filter(p=>p.id!==id);
+      await persist();
+      renderAll();
+      if(currentDetailSubjectId) renderSubjectDetail();
+      showToast('Ödəniş silindi');
+    };
+  });
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function renderAll(){
+  renderAddChips();
+  renderRecent();
+  if(!currentDetailSubjectId) renderSubjectList();
+  renderHistoryFilter();
+  renderHistoryList();
+  renderPaymentSubjectSelect();
+  renderPayments();
+}
+
+/* ---------- EVENTS ---------- */
+document.querySelectorAll('nav button').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.getAttribute('data-tab');
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('tab-'+tab).classList.add('active');
+    const titles = {add:'Dərs Dəftəri', subjects:'Fənlər', history:'Tarixçə', payments:'Ödənişlər'};
+    document.getElementById('pageTitle').textContent = titles[tab];
+    if(tab==='history') renderHistoryList();
+    if(tab==='subjects' && currentDetailSubjectId===null){
+      document.getElementById('subjectsListView').classList.add('active');
+      document.getElementById('subjectDetailView').classList.remove('active');
+      renderSubjectList();
+    }
+  };
+});
+
+document.getElementById('historyFilter').addEventListener('change', renderHistoryList);
+
+document.getElementById('saveVisitBtn').onclick = async ()=>{
+  const date = document.getElementById('addDate').value || todayStr();
+  const time = document.getElementById('addTime').value;
+  const note = document.getElementById('addNote').value.trim();
+  if(!selectedAddSubject){ showToast('Fənn seç'); return; }
+  data.visits.push({ id: uid(), subjectId: selectedAddSubject, date, time, note });
+  await persist();
+  document.getElementById('addNote').value = '';
+  document.getElementById('addTime').value = '';
+  renderAll();
+  showToast('Qeyd edildi ✓');
+};
+
+document.getElementById('addSubjectBtn').onclick = async ()=>{
+  const input = document.getElementById('newSubjectName');
+  const name = input.value.trim();
+  if(!name){ showToast('Ad yaz'); return; }
+  const color = PALETTE[data.subjects.length % PALETTE.length];
+  data.subjects.push({ id: uid(), name, color, cycleLessons:8, cyclePrice:40, schedule:{} });
+  await persist();
+  input.value = '';
+  renderAll();
+  showToast('Fənn əlavə edildi ✓');
+};
+
+document.getElementById('savePaymentBtn').onclick = async ()=>{
+  const amount = document.getElementById('paymentAmount').value;
+  const date = document.getElementById('paymentDate').value || todayStr();
+  const note = document.getElementById('paymentNote').value.trim();
+  const subjectId = document.getElementById('paymentSubject').value;
+  if(!amount || Number(amount) <= 0){ showToast('Məbləğ yaz'); return; }
+  data.payments.push({ id: uid(), amount: Number(amount), date, note, subjectId });
+  await persist();
+  document.getElementById('paymentAmount').value = '';
+  document.getElementById('paymentNote').value = '';
+  renderAll();
+  showToast('Ödəniş qeyd edildi ✓');
+};
+
+/* ---------- INIT ---------- */
+(async function init(){
+  const today = todayStr();
+  document.getElementById('addDate').value = today;
+  document.getElementById('paymentDate').value = today;
+  document.getElementById('dateNow').textContent = fmtDateLong(today);
+
+  await load();
+  renderAll();
+})();
+</script>
+</body>
+</html>
